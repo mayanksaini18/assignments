@@ -7,18 +7,34 @@ const {JWT_SECRET} = require("../config");
 const router = Router();
 const jwt = require("jsonwebtoken");
 
-// Admin Routes
 router.post("/signup", async (req, res) => {
   // Implement admin signup logic
   const username = req.body.username;
   const password = req.body.password;
   
-  const user = await User.find({
+   await Admin.create({
+    username,
+    password
+  })
+  res.json({
+    message: "Admin created successfully"
+  })
+
+});
+
+
+// Admin Routes
+router.post("/signin", async (req, res) => {
+  // Implement admin signin logic
+  const username = req.body.username;
+  const password = req.body.password;
+  
+  const admin = await Admin.findOne({
     username,
     password
   
   })
-  if (user) {
+  if (admin) {
     const token = jwt.sign({
       username
       }, JWT_SECRET);
@@ -32,6 +48,8 @@ router.post("/signup", async (req, res) => {
     })
   }
 });
+
+
 
 router.post("/courses", adminMiddleware,  async(req, res) => {
   // Implement course creation logic

@@ -3,23 +3,28 @@ const jwt = require("jsonwebtoken");
 // Middleware for handling auth
 
 function userMiddleware(req, res, next) {
-    const token = req.headers.authorization;
-    const words = token.split(" ");
-    const jwtToken = words[1];
-    const decodedValue = jwt.verify(jwtToken,JWT_SECRET);
+    const authHeader = req.headers.authorization;
 
-    if (decodedValue.username) {
-        req.username = decodedValue.username;
-        req.randomData = "Adsadsadsadssd";
-        next();
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ msg: "Access denied. No token provided." });
     }
-    else{
-        res.status(403).json({
-            msg: "You are not authenticated"
-        })
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const decodedValue = jwt.verify(token, JWT_SECRET);
+
+        if (decodedValue.username) {
+            req.username = decodedValue.username;
+            next();
+        } else {
+            res.status(403).json({
+                msg: "You are not authenticated"
+            });
+        }
+    } catch (err) {
+        res.status(401).json({ msg: "Invalid or expired token" });
     }
-    // Implement user auth logic
-    // You need to check the headers and validate the user from the user DB. Check readme for the exact headers to be expected
 }
 
 module.exports = userMiddleware;
