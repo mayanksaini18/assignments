@@ -4,8 +4,6 @@ const app = express();
 const adminRouter = require("./routes/admin")
 const userRouter = require("./routes/user");
 
-// secret key for JWT
-const SECRET ="mayank-secret"
 
 // Middleware for parsing request bodies
 app.use(bodyParser.json());
@@ -22,4 +20,4 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-module.exports = {app, SECRET};
+module.exports = {app, JWT_SECRET};
